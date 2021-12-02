@@ -64,11 +64,11 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 		renderHTTPError(log, r, w, errors.Wrap(err, "could not retrieve products"), http.StatusInternalServerError)
 		return
 	}
-	cart, err := fe.getCart(r.Context(), sessionID(r))
-	if err != nil {
-		renderHTTPError(log, r, w, errors.Wrap(err, "could not retrieve cart"), http.StatusInternalServerError)
-		return
-	}
+	// cart, err := fe.getCart(r.Context(), sessionID(r))
+	// if err != nil {
+	// 	renderHTTPError(log, r, w, errors.Wrap(err, "could not retrieve cart"), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	type productView struct {
 		Item  *pb.Product
@@ -103,13 +103,14 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	plat.setPlatformDetails(strings.ToLower(env))
 
 	if err := templates.ExecuteTemplate(w, "home", map[string]interface{}{
-		"session_id":      sessionID(r),
-		"request_id":      r.Context().Value(ctxKeyRequestID{}),
-		"user_currency":   currentCurrency(r),
-		"show_currency":   true,
-		"currencies":      currencies,
-		"products":        ps,
-		"cart_size":       cartSize(cart),
+		"session_id":    sessionID(r),
+		"request_id":    r.Context().Value(ctxKeyRequestID{}),
+		"user_currency": currentCurrency(r),
+		"show_currency": true,
+		"currencies":    currencies,
+		"products":      ps,
+		// "cart_size":       cartSize(cart),
+		"cart_size":       0,
 		"banner_color":    os.Getenv("BANNER_COLOR"), // illustrates canary deployments
 		"ad":              fe.chooseAd(r.Context(), []string{}, log),
 		"platform_css":    plat.css,
